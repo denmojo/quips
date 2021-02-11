@@ -1,10 +1,11 @@
 # smash
 a bash.org clone built with Flask
+This version was forked by denmojo. It is run locally using SQLite.
 
 ## Technologies
-- python
+- python3
 - Flask
-- PostgreSQL
+- SQLite3
 - SQLAlchemy
 
 ## Functionalities
@@ -12,7 +13,7 @@ a bash.org clone built with Flask
 - Tags for grouping and classifying quotes
 - Moderation queue, admin approval required for adding new quotes
 - Pagination
-- Ratings
+- Ratings (not yet implemented)
 
 ## How to run
 This program is designed to be easy to deploy via Heroku. It can also run locally.
@@ -25,7 +26,7 @@ First, you have to edit the config file (`config.json`). `APPNAME` is the name t
 
 `APPNAME` and `APPBRAND` will be loaded from the environment if they're left empty in the config.
 
-Smash uses PostgreSQL. Before you start, you need to set `DATABASE_URL` environment variable to a valid URL leading to your database. If you install the Heroku plugin, it will be done automatically for you - you only need to do this manually if you want to run Smash locally.
+Smash uses SQLite. Before you start, you need to set `DATABASE_URL` environment variable to a valid URL leading to your database. If you install the Heroku plugin, it will be done automatically for you - you only need to do this manually if you want to run Smash locally. The `DATABASE_URL` will take the form: `sqlite:////path/to/dbfile.db`.
 
 After basic config is done, run this to start the server:
 
