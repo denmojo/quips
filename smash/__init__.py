@@ -9,7 +9,8 @@ app = Flask(__name__)
 conf = config.Config('config.json')
 
 # Load database URL for SQLAlchemy from environment
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_DATABASE_URI'] = conf.config['DATABASE_URL']
 
 # This flag tells the program it's deployed on heroku
 if 'HEROKU' in os.environ:

@@ -1,6 +1,6 @@
 import datetime
 import logging
-import psycopg2
+import sqlite3
 from flask import render_template, Markup, request, abort, session, g
 
 from smash.models_sqlalchemy import *
@@ -31,7 +31,7 @@ def before_request():
 @app.route('/')
 def index():
     welcome = conf.config['MOTD']
-    news = ("<p><b>{}</b></p><h4>{} running on smash quote database"
+    news = ("<p><b>{}</b></p><h4>{} running on quips database"
             " engine launched today</h4>").format(
                 datetime.datetime.now().strftime("%d/%m/%y"),
                 conf.config['APPNAME']
