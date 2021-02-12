@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import sqlite3
+from sqlalchemy.sql.expression import func, select
 from flask import render_template, Markup, request, abort, session, g
 
 from smash.models_sqlalchemy import *
@@ -137,6 +138,28 @@ def top_page(page):
         curpage=page-1,
         page_type="latest"
     )
+
+@app.route('/random')
+def random():
+    quotes = Quote.query.filter_by(approved=True).order_by(func.random()).all()
+    allquotes = len(quotes)
+    quotes = quotes[:10]
+
+    if len(quotes)>0:
+        # Replace line breaks with html breaks and escape special characters
+        for quote in quotes:
+            quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
+
+        return render_template(
+            "latest.html",
+            title="Random",
+            quotes=quotes,
+            numpages=1 + allquotes//10,
+            curpage=0,
+            page_type="latest"
+        )
+    else:
+        return message("alert-warning", "No quips in the database.")
 
 
 @app.route('/queue')
