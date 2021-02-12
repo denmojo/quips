@@ -337,6 +337,7 @@ def search_page(query, page):
 
 
 @app.route('/add', methods=['GET', 'POST'])
+@limiter.limit("5 per minute;25 per day")
 def add_new():
     if request.method == 'POST':
         if request.form['submit'] == "Submit":
