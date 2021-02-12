@@ -28,7 +28,7 @@ First, you have to edit the config file (`config.json`). `APPNAME` is the name t
 
 Smash uses SQLite. Before you start, you need to set `DATABASE_URL` environment variable to a valid URL leading to your database. If you install the Heroku plugin, it will be done automatically for you - you only need to do this manually if you want to run Smash locally. The `DATABASE_URL` will take the form: `sqlite:////path/to/dbfile.db`.
 
-After basic config is done, run this to start the server:
+After basic config is done, run this to start the development server:
 
 ```
 python run.py
@@ -39,6 +39,11 @@ The program looks for `HEROKU` in the environment; if that variable is equal to 
 The first time it's started it will create the local database and all required tables, as specified by models. After that it's ready to be used.
 
 All logging is done by printing to stdout - heroku adds that to the app logs visible in the dashboard.
+
+## Running under gunicorn
+To productionalize this app, set up nginx or other upstream proxy route to this app under gunicorn wsgi. To run using gunicorn, simply do: 
+
+`gunicorn --bind 0.0.0.0:5000 wsgi:app`
 
 ## Screenshots
 ![index](http://i.imgur.com/VA4NGw4.png)

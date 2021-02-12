@@ -1,7 +1,8 @@
 {
     "APPBRAND": "",
-    "APPNAME": "",
-    "SECRETKEY": "",
-    "ADMINSECRET": "",
-    "MOTD": "Welcome to the quote archive."
+    "APPNAME": "Resquip",
+    "SECRETKEY": "***REMOVED***",
+    "ADMINSECRET": "***REMOVED***",
+    "MOTD": "Welcome to the resquips archive.",
+    "DATABASE_URL": "sqlite:////home/pi/code/smash/smash/resquips.db"
 }

@@ -5,7 +5,7 @@ import sqlite3
 from flask import render_template, Markup, request, abort, session, g
 
 from smash.models_sqlalchemy import *
-from smash import app, conf, db
+from smash import app, conf, db, limiter
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +77,7 @@ def latest():
             page_type="latest"
         )
     else:
-        return message("alert-warning", "No quotes in the database.")
+        return message("alert-warning", "No quips in the database.")
 
 
 @app.route('/latest/<int:page>')
@@ -96,6 +96,48 @@ def latest_page(page):
         curpage=page-1,
         page_type="latest"
     )
+
+
+@app.route('/top')
+def top():
+    quotes = Quote.query.filter_by(approved=True).order_by(Quote.rating.desc()).all()
+    allquotes = len(quotes)
+    quotes = quotes[:10]
+
+    if len(quotes)>0:
+        # Replace line breaks with html breaks and escape special characters
+        for quote in quotes:
+            quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
+
+        return render_template(
+            "latest.html",
+            title="Top",
+            quotes=quotes,
+            numpages=1 + allquotes//10,
+            curpage=0,
+            page_type="latest"
+        )
+    else:
+        return message("alert-warning", "No quips in the database.")
+
+
+@app.route('/top/<int:page>')
+def top_page(page):
+    allquotes = len(Quote.query.filter_by(approved=True).order_by(Quote.rating.desc()).all())
+    quotes = Quote.query.filter_by(approved=True).order_by(Quote.rating.desc()).all()[(page-1)*10:page*10]
+
+    for quote in quotes:
+        quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
+
+    return render_template(
+        "latest.html",
+        title="Top - page {}".format(page),
+        quotes=quotes,
+        numpages=1 + allquotes//10,
+        curpage=page-1,
+        page_type="latest"
+    )
+
 
 @app.route('/queue')
 def queue():
@@ -322,6 +364,7 @@ def add_new():
         )
 
 @app.route('/upvote', methods=['POST'])
+@limiter.limit("1 per minute")
 def upvote_post():
     if request.method == "POST":
 
@@ -338,6 +381,7 @@ def upvote_post():
     return redirect(url_for('index'))
 
 @app.route('/downvote', methods=['POST'])
+@limiter.limit("1 per minute")
 def downvote_post():
     if request.method == "POST":
 

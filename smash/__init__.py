@@ -1,5 +1,7 @@
 import os
 from flask import Flask, g
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_sqlalchemy import SQLAlchemy
 from . import config, log
 
@@ -7,6 +9,12 @@ from . import config, log
 log.configure_logging()
 app = Flask(__name__)
 conf = config.Config('config.json')
+
+limiter = Limiter(
+        app,
+        key_func=get_remote_address,
+        default_limits=["200 per day", "60 per hour"]
+)
 
 # Load database URL for SQLAlchemy from environment
 #app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
