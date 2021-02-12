@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import sqlite3
 from flask import render_template, Markup, request, abort, session, g
@@ -143,7 +144,7 @@ def moderate():
     abort(501)
 
 
-@app.route('/quote/<int:id>')
+@app.route('/quip/<int:id>')
 def quote(id):
     quote = Quote.query.filter_by(id=id, approved=True).first()
 
@@ -151,7 +152,7 @@ def quote(id):
         return render_template(
             "message.html",
             alertclass="alert-warning",
-            message="No such quote."
+            message="No such quip."
         )
     else:
         quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
@@ -319,3 +320,36 @@ def add_new():
             "add.html",
             title="Add new"
         )
+
+@app.route('/upvote', methods=['POST'])
+def upvote_post():
+    if request.method == "POST":
+
+        data_received = json.loads(request.data) 
+        
+        quip = Quote.query.filter_by(id=data_received['postid']).first()
+        
+        if quip:
+            setattr(quip, "rating", quip.rating + 1)
+            db.session.commit()
+                 
+            return json.dumps({'status' : 'success'})
+        return json.dumps({'status' : 'no post found'})
+    return redirect(url_for('index'))
+
+@app.route('/downvote', methods=['POST'])
+def downvote_post():
+    if request.method == "POST":
+
+        data_received = json.loads(request.data) 
+        
+        quip = Quote.query.filter_by(id=data_received['postid']).first()
+        
+        if quip:
+            setattr(quip, "rating", quip.rating - 1)
+            db.session.commit()
+                 
+            return json.dumps({'status' : 'success'})
+        return json.dumps({'status' : 'no post found'})
+    return redirect(url_for('index'))
+

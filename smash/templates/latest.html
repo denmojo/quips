@@ -1,7 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+<script type="text/javascript" language="JavaScript">
+	
+$(document).ready(function(){
+$('a.rate-positive').click(function(event) {
+var quipnumber = $(event.target).data('postid');
+    $.ajax({
+    	url : '/upvote',
+    	type : "post",
+    	contentType: 'application/json;charset=UTF-8',
+    	dataType: "json",
+    	data : JSON.stringify({'postid' : quipnumber}),
+    	success : function(response) {
+    		console.log(response);	
+    	},
+    	error : function(xhr) {
+    		console.log(xhr);
+    	}
+    });
+});
+});
 
+$(document).ready(function(){
+$('a.rate-negative').click(function() {
+var quipnumber = $(event.target).data('postid');
+$.ajax({
+        url : '/downvote',
+        type : "post",
+        contentType: 'application/json;charset=UTF-8',
+        dataType: "json",
+        data : JSON.stringify({'postid' : quipnumber}),
+        success : function(response) {
+                console.log(response);
+        },
+        error : function(xhr) {
+                console.log(xhr);
+        }
+    });
+});
+});
+</script><!-- END javascript -->
 
 {% if numpages>1 %}
 <ul class="pagination pagination-sm">
@@ -18,9 +58,9 @@
     {% if quote.approved %}
     <div class="quote-header">
       {% if quote.id %}
-      <a class="quote-link" href="/quote/{{ quote.id }}">#{{ quote.id }}</a>
+      <a class="quote-link" href="/quip/{{ quote.id }}">#{{ quote.id }}</a>
       {% endif %}
-      <a class="rate-positive">+</a> ({{quote.rating}}) <a class="rate-negative">-</a>
+      <a class="rate-positive" name="up" id="up-vote" data-postid="{{ quote.id }}" href="#">+</a> ({{quote.rating}}) <a class="rate-negative" name="down" id="down-vote" data-postid="{{ quote.id }}" href="#">-</a>
       <div class="pull-right quote-date">{{ quote.time }}</div>
 
       {% if session.authorized and quote.id %}
@@ -51,5 +91,4 @@
     {% endif %}
   {% endfor %}
 {% endif %}
-
 {% endblock %}
