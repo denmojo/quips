@@ -13,7 +13,7 @@ This version was forked by denmojo. It is run locally using SQLite.
 - Tags for grouping and classifying quotes
 - Moderation queue, admin approval required for adding new quotes
 - Pagination
-- Ratings (not yet implemented)
+- Ratings
 
 ## How to run
 This program is designed to be easy to deploy via Heroku. It can also run locally.
