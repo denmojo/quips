@@ -335,6 +335,13 @@ def search_page(query, page):
         search_query=query
     )
 
+@app.route('/slack', methods=['POST'])
+@limiter.limit("5 per minute;25 per day")
+def add_new():
+    quote_body = request.form["text"]
+    quote = Quote(quote_body, request.remote_addr, timestamp())
+    db.session.add(quote)
+    db.session.commit()
 
 @app.route('/add', methods=['GET', 'POST'])
 @limiter.limit("5 per minute;25 per day")
