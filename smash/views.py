@@ -3,7 +3,7 @@ import json
 import logging
 import sqlite3
 from sqlalchemy.sql.expression import func, select
-from flask import render_template, Markup, request, abort, session, g
+from flask import render_template, Markup, request, redirect, abort, session, g
 
 from smash.models_sqlalchemy import *
 from smash import app, conf, db, limiter
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def timestamp():
-    return datetime.datetime.now().strftime("%H:%M:%S %d/%m/%y")
+    return datetime.datetime.now().strftime("%H:%M:%S %m/%d/%Y")
 
 
 def message(level, msg):
@@ -35,7 +35,7 @@ def index():
     welcome = conf.config['MOTD']
     news = ("<p><b>{}</b></p><h4>{} running on quips database"
             " engine launched today</h4>").format(
-                datetime.datetime.now().strftime("%d/%m/%y"),
+                datetime.datetime.now().strftime("%m/%d/%Y"),
                 conf.config['APPNAME']
             )
 
@@ -52,6 +52,7 @@ def login_page():
     if request.method == 'POST':
         if request.form["secret"] == conf.config['ADMINSECRET']:
             session['authorized'] = True
+            return redirect("queue", code=303)
 
     return render_template(
         "login.html",
