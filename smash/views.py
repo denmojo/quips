@@ -41,7 +41,7 @@ def index():
 
     return render_template(
         "index.html",
-        title="Quotes",
+        title="Quips",
         welcometext=welcome,
         newstext=news
     )
@@ -193,7 +193,7 @@ def moderate():
         quote.approved = True
         db.session.commit()
 
-        return message("alert-success", "Quote approved.")
+        return message("alert-success", "Quip approved.")
 
     elif request.form['submit'] == "Delete":
         quote = Quote.query.filter_by(id=request.form['quoteid']).first()
@@ -204,7 +204,7 @@ def moderate():
         db.session.delete(quote)
         db.session.commit()
 
-        return message("alert-success", "Quote deleted.")
+        return message("alert-success", "Quip deleted.")
 
     abort(501)
 
@@ -223,7 +223,7 @@ def quote(id):
         quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
         return render_template(
             "latest.html",
-            title="Quote #{}".format(quote.id),
+            title="Quip #{}".format(quote.id),
             quotes=[quote,],
             numpages=1,
             curpage=0,
@@ -343,6 +343,9 @@ def slack():
     db.session.add(quote)
     db.session.commit()
 
+    return json.dumps({'status' : 'success'})
+
+
 @app.route('/add', methods=['GET', 'POST'])
 @limiter.limit("5 per minute;25 per day")
 def add_new():
@@ -379,7 +382,7 @@ def add_new():
             
             return render_template(
                 "latest.html",
-                title="Quote preview",
+                title="Quip preview",
                 quotes=[preview,],
                 numpages=1,
                 curpage=0,
