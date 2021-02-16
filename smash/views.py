@@ -463,7 +463,7 @@ def add_new():
         )
 
 @app.route('/upvote', methods=['POST'])
-@limiter.limit("1 per minute")
+@limiter.limit("5 per minute")
 def upvote_post():
     if request.method == "POST":
 
@@ -518,7 +518,8 @@ def export_get():
             'content': q.content,
             'rating': q.rating,
             'authorIP': q.author_ip,
-            'unixtime': to_unixtime(q.time),
+            'time': q.time,
             'tags': tag_map[q.id],
         })
-    return json.dumps(result)
+    return json.dumps(result), 200, {'Content-Type': 'application/json'}
+    
