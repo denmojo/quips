@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import sqlite3
+from collections import defaultdict
 from sqlalchemy.sql.expression import func, select
 from flask import render_template, Markup, request, redirect, abort, session, g
 
@@ -10,9 +11,16 @@ from smash import app, conf, db, limiter
 
 logger = logging.getLogger(__name__)
 
+TIME_FORMAT="%H:%M:%S %m/%d/%Y"
+
 
 def timestamp():
-    return datetime.datetime.now().strftime("%H:%M:%S %m/%d/%Y")
+    return datetime.datetime.now().strftime(TIME_FORMAT)
+
+
+def to_unixtime(ts):
+    """ Converts from a time string to a unixtime """
+    return datetime.datetime.strptime(ts, TIME_FORMAT).strftime("%s")
 
 
 def message(level, msg):
@@ -488,3 +496,29 @@ def downvote_post():
         return json.dumps({'status' : 'no post found'})
     return redirect(url_for('index'))
 
+@app.route('/export', methods=['GET'])
+@limiter.limit("1 per minute")
+def export_get():
+    """exfiltrates all approved quotes from the database from an unauthenticated endpoint."""
+    all_tag_names = Tag.query.all()
+    tag_names = {}
+    for tag in all_tag_names:
+        tag_names[tag.id] = tag.name
+
+    all_tags = db.session.query(tags_to_quotes).all()
+    tag_map = defaultdict(list)
+    for tag in all_tags:
+        tag_map[tag.quoteid].append(tag_names[tag.tagid])
+
+    result = []
+    all_quotes = Quote.query.filter_by(approved=True).order_by(Quote.id.desc()).all()
+
+    for q in all_quotes:
+        result.append({
+            'content': q.content,
+            'rating': q.rating,
+            'authorIP': q.author_ip,
+            'unixtime': to_unixtime(q.time),
+            'tags': tag_map[q.id],
+        })
+    return json.dumps(result)
