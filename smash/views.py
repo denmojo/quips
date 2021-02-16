@@ -117,7 +117,7 @@ def top():
             quotes=quotes,
             numpages=1 + allquotes//10,
             curpage=0,
-            page_type="latest"
+            page_type="top"
         )
     else:
         return message("alert-warning", "No quips in the database.")
@@ -137,7 +137,46 @@ def top_page(page):
         quotes=quotes,
         numpages=1 + allquotes//10,
         curpage=page-1,
-        page_type="latest"
+        page_type="top"
+    )
+
+@app.route('/browse')
+def browse():
+    quotes = Quote.query.filter_by(approved=True).order_by(Quote.id.asc()).all()
+    allquotes = len(quotes)
+    quotes = quotes[:10]
+
+    if len(quotes)>0:
+        # Replace line breaks with html breaks and escape special characters
+        for quote in quotes:
+            quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
+
+        return render_template(
+            "latest.html",
+            title="Latest",
+            quotes=quotes,
+            numpages=1 + allquotes//10,
+            curpage=0,
+            page_type="browse"
+        )
+    else:
+        return message("alert-warning", "No quips in the database.")
+
+@app.route('/browse/<int:page>')
+def browse_page(page):
+    allquotes = len(Quote.query.filter_by(approved=True).order_by(Quote.id.asc()).all())
+    quotes = Quote.query.filter_by(approved=True).order_by(Quote.id.asc()).all()[(page-1)*10:page*10]
+
+    for quote in quotes:
+        quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
+
+    return render_template(
+        "latest.html",
+        title="Latest - page {}".format(page),
+        quotes=quotes,
+        numpages=1 + allquotes//10,
+        curpage=page-1,
+        page_type="browse"
     )
 
 @app.route('/random')
@@ -157,10 +196,27 @@ def random():
             quotes=quotes,
             numpages=1 + allquotes//10,
             curpage=0,
-            page_type="latest"
+            page_type="random"
         )
     else:
         return message("alert-warning", "No quips in the database.")
+
+@app.route('/random/<int:page>')
+def random_page(page):
+    allquotes = len(Quote.query.filter_by(approved=True).order_by(func.random()).all())
+    quotes = Quote.query.filter_by(approved=True).order_by(func.random()).all()[(page-1)*10:page*10]
+
+    for quote in quotes:
+        quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
+
+    return render_template(
+        "latest.html",
+        title="Latest - page {}".format(page),
+        quotes=quotes,
+        numpages=1 + allquotes//10,
+        curpage=page-1,
+        page_type="random"
+    )
 
 
 @app.route('/queue')

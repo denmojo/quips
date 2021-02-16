@@ -17,7 +17,7 @@
   {% for quote in quotes %}
     {% if quote.approved %}
     <div class="quote-header">
-      <a class="quote-link" href="/quote/{{ quote.id }}">#{{ quote.id }}</a>
+      <a class="quote-link" href="/quip/{{ quote.id }}">#{{ quote.id }}</a>
       <a class="rate-positive">+</a> ({{quote.rating}}) <a class="rate-negative">-</a>
       <div class="pull-right quote-date">{{ quote.time }}</div>
 
