@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="alert {{alertclass}}">
+  {{message}}
+</div>
+
 <center>
 <form action="/add" name="add" method="post">
     <table width="60%">
@@ -24,6 +28,8 @@
                 </br>
                     <input type="submit" name="submit" value="Preview" class="btn btn-default"></input>
                     <input type="submit" name="submit" value="Submit" class="btn btn-default"></input>
+
+		    {{ xcaptcha }}
                 </td>
             </tr>
 	<tr><td>

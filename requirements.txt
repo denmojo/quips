@@ -1,6 +1,7 @@
 Flask==1.1.2
 Flask-Limiter==1.4
 Flask-SQLAlchemy==2.4.4
+Flask-xCaptcha==0.5.5
 Jinja2==2.11.2
 limits==1.5.1
 mock==2.0.0

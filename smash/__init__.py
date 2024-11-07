@@ -3,17 +3,25 @@ from flask import Flask, g
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_sqlalchemy import SQLAlchemy
+from flask_xcaptcha import XCaptcha
 from . import config, log
 
 
 log.configure_logging()
 app = Flask(__name__)
 conf = config.Config('config.json')
+app.config['XCAPTCHA_SITE_KEY'] = "YOUR_SITE_KEY"
+app.config['XCAPTCHA_SECRET_KEY'] = "YOUR_SECRET_KEY"
+app.config['XCAPTCHA_VERIFY_URL'] = "https://hcaptcha.com/siteverify"
+app.config['XCAPTCHA_API_URL'] = "https://hcaptcha.com/1/api.js"
+app.config['XCAPTCHA_DIV_CLASS'] = "h-captcha"
+
+xcaptcha = XCaptcha(app=app)
 
 limiter = Limiter(
         app,
         key_func=get_remote_address,
-        default_limits=["200 per day", "60 per hour"]
+        default_limits=["200000 per day", "60 per hour"]
 )
 
 # Load database URL for SQLAlchemy from environment
