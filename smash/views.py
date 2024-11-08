@@ -300,22 +300,23 @@ def quote(id):
 def tag(tagname):
     tag = Tag.query.filter_by(name=tagname).first()
 
-    if len(list(tag.quotes))>0:
-        allquotes = len(list(tag.quotes))
-        tag.quotes = tag.quotes[:10]
+    if tag is not None:
+        if len(list(tag.quotes))>0:
+            allquotes = len(list(tag.quotes))
+            tag.quotes = tag.quotes[:10]
 
-        # Replace line breaks with html breaks and escape special characters
-        for quote in tag.quotes:
-            quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
+            # Replace line breaks with html breaks and escape special characters
+            for quote in tag.quotes:
+                quote.content = str(Markup.escape(quote.content)).replace('\n', '</br>')
 
-        return render_template(
-            "latest.html",
-            title="Tag - {}".format(tagname),
-            quotes=tag.quotes,
-            numpages=1 + allquotes//10,
-            curpage=0,
-            page_type="tag/{}".format(tagname)
-        )
+            return render_template(
+                "latest.html",
+                title="Tag - {}".format(tagname),
+                quotes=tag.quotes,
+                numpages=1 + allquotes//10,
+                curpage=0,
+                page_type="tag/{}".format(tagname)
+            )
     else:
         return message("alert-warning", "No quotes with this tag.")
 
